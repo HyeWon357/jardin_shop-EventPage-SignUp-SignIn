@@ -1,0 +1,31 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Admin">
+	
+	<select id="admin_main" resultType="com.jardin.shop.Dto.JoinDto">
+		select * from j_join order by j_day DESC
+	</select>
+     
+     <select id="admin_eventlist" resultType="com.jardin.shop.Dto.EventDto">
+     	select bId, bName, bTitle, bDate, bDate2, bFile, bFile2, bHit
+    	from ( select bId, bName, bTitle, bDate, bDate2, bFile, bFile2, bHit, row_number() over (order by bId desc) as rNum
+   		from j_event) j
+    	where rNum between #{rowStart} and #{rowEnd}
+    	order by bId desc
+     </select>
+     
+     <select id="listCount" resultType="int">
+		select count(bId) from j_event where bId &gt; 0
+	</select>
+    
+    <select id="admin_eventcontent" resultType="com.jardin.shop.Dto.EventDto">
+    	select * from j_event where bId=#{bId}
+    </select>
+    
+    <insert id="eventwrite" parameterType="com.jardin.shop.Dto.EventDto">
+    	insert into j_event values(j_event_seq.nextval, #{bName}, #{bTitle}, #{bDate}, #{bDate2}, #{bFile}, #{bFile2}, #{bHit})
+    </insert>
+    
+</mapper>

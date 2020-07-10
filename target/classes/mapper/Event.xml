@@ -1,0 +1,49 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Event">
+	
+	<!-- 페이징, 이벤트 리스트 -->
+	<select id="event_list" resultType="com.jardin.shop.Dto.EventDto" parameterType="com.jardin.shop.Dto.PagingDto">
+		select bId, bName, bTitle, bDate, bDate2, bFile, bFile2, bHit
+    	from ( select bId, bName, bTitle, bDate, bDate2, bFile, bFile2, bHit, row_number() over (order by bId desc) as rNum
+   		from j_event) j
+    	where rNum between #{rowStart} and #{rowEnd}
+    	order by bId desc
+	</select>
+	
+	<select id="listCount" resultType="int">
+		select count(bId) from j_event where bId &gt; 0
+	</select>
+
+	<select id="event_content" resultType="com.jardin.shop.Dto.EventDto">
+		select * from j_event where bId=#{bId}
+	</select>
+	
+	<update id="event_upHit">
+		update j_event set bHit=bHit+1 where bId=#{bId}
+	</update>
+	
+	<select id="event_next" resultType="com.jardin.shop.Dto.EventDto">
+		select * from j_event where bId = (select min(bId) from j_event where bId &gt; #{param1})
+	</select>
+	
+	<select id="event_prev" resultType="com.jardin.shop.Dto.EventDto">
+		select * from j_event where bId = (select max(bId) from j_event where bId &lt; #{param1})
+	</select>
+	
+	<!-- 댓글 리스트 -->
+	<select id="reply_list" resultType="com.jardin.shop.Dto.ReplyDto">
+		select * from j_reply where r_listnum=#{r_listnum}
+	</select>
+	
+	<insert id="reply_write" parameterType="com.jardin.shop.Dto.ReplyDto">
+		insert into j_reply values(j_reply_seq.nextval, #{r_listnum}, #{r_user}, #{r_pw}, #{r_comment}, #{r_date}, #{r_id})
+	</insert>
+	
+	<delete id="reply_delete" parameterType="com.jardin.shop.Dto.ReplyDto">
+		delete from j_reply where r_num=#{r_num}
+	</delete>
+
+</mapper>

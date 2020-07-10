@@ -1,0 +1,18 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Login">
+	
+	<!-- login check -->
+	<select id="loginCh" resultType="String">
+		select j_id from j_join where j_id=#{j_id} and j_pw=#{j_pw}
+	</select>
+	
+	<!-- 회원 정보 -->
+	<select id="loginUser" resultType="com.jardin.shop.Dto.JoinDto">
+		select j_name from j_join where j_id=#{j_id} and j_pw=#{j_pw}
+	</select>
+    
+    
+</mapper>
